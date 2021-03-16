@@ -1,0 +1,3 @@
+cmd  进入virtualBox安装目录
+VBoxManage internalcommands sethduuid “虚拟机移动后的路径\***.vdi”
+创建新的虚拟机（使用已有的虚拟硬盘文件）   关联这个vdi文件

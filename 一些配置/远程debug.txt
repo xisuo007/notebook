@@ -1,0 +1,3 @@
+启动的时候服务器tomcat下bin/catalina.sh里面的     # OS specific support.  后面添加
+	CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8525"    address是自己remote的port
+在ide里新建remote  端口号设置和address一致，host填写服务器地址

@@ -1,0 +1,19 @@
+下载
+wget  http://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz
+解压
+tar zxvf apache-maven-3.5.4-bin.tar.gz
+放入自己要存的目录（usr/local/maven）并重命名
+mv apache-maven-3.5.4-bin.tar.gz   maven
+
+vim /etc/profile
+
+在最后一行加入
+
+export MAVEN_HOME=/usr/local/maven
+export PATH=$JAVA_HOME/bin:......:$MAVEN_HOME/bin:$PATH
+
+再执行  source /etc/profile
+看是否成功   mvn -v
+
+
+

@@ -1,0 +1,11 @@
+cmd 进入控制台 
+输入命令：
+mvn install:install-file -Dfile=d:\jug-lgpl-2.0.0.jar -DgroupId=org.pentaho -DartifactId=jug-lgpl -Dversion=2.0.0 -Dpackaging=jar
+		           jar包的位置	                            groupId                            artifactId                版本号
+
+
+mvn install:install-file -Dfile=d:\kettle-core-7.1.0.0-12.jar -DgroupId=org.pentaho -DartifactId=kettle-core -Dversion=7.1.0.0-12 -Dpackaging=jar
+
+mvn install:install-file -Dfile=d:\kettle-engine-7.1.0.0-12.jar -DgroupId=org.pentaho -DartifactId=kettle-engine -Dversion=7.1.0.0-12 -Dpackaging=jar
+
+mvn install:install-file -Dfile=d:\kettle-dbdialog-7.1.0.0-12.jar -DgroupId=org.pentaho -DartifactId=kettle-dbdialog -Dversion=7.1.0.0-12 -Dpackaging=jar

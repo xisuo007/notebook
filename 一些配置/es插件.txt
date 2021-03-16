@@ -1,0 +1,29 @@
+head插件安装
+
+1.https://github.com/mobz/elasticsearch-head/archive/master.zip  wget下载zip 解压
+2.将解压后的文件夹下的文件copy到elasticsearch-1.0.0\plugins\head
+3.运行es
+4.打开http://localhost:9200/_plugin/head/ 
+ 
+ 
+[root@node03 bigdesk-master]# cp -r 解压后的文件夹 /usr/local/elasticsearch-2.3.4/plugins/head/
+[root@node03 bigdesk-master]# ls
+bigdesk_es2.png  LICENSE  NOTICE  plugin-descriptor.properties  README.md  _site
+
+
+
+----------------------------------------------------------------------------------
+bigdesk插件安装
+
+1.https://github.com/lukas-vlcek/bigdesk/archive/master.zip  wget下载zip 解压
+2.建立elasticsearch-1.0.0\plugins\bigdesk\_site文件
+3.将解压后的bigdesk-master文件夹下的文件copy到_site
+4.运行es
+5.打开http://localhost:9200/_plugin/bigdesk/ 
+ 
+ 
+[root@node03 bigdesk-master]# cp -r * /usr/local/elasticsearch-2.3.4/plugins/bigdesk/_site/
+[root@node03 bigdesk-master]# ls
+bigdesk_es2.png  LICENSE  NOTICE  plugin-descriptor.properties  README.md  _site
+ 
+----------------------------------------------------------------------------------

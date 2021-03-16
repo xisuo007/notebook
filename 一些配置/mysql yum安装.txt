@@ -1,0 +1,70 @@
+1.卸载  先停掉mysql进程   没有安装过的可以直接跳过
+netstat -antp  查看   如果没有netstat命令     yum install -y net-tools   安装一下
+        pkill -9 mysqld
+2.rpm -qa|grep -i mysql
+  删除掉所有相关的文件
+ yum -y remove  文件名
+卸载不掉的用 rpm -ev 
+
+3.下载mysql的repo源
+[root@localhost ~]# cd /usr/local/src/
+[root@localhost src]# wget http://repo.mysql.com/mysql57-community-release-el7-8.noarch.rpm
+[root@localhost src]# rpm -ivh mysql57-community-release-el7-8.noarch.rpm 
+[root@localhost src]#  yum -y install mysql-server 
+等待安装完毕
+
+默认配置文件路径： 
+配置文件：/etc/my.cnf 
+日志文件：/var/log/mysqld.log 
+服务启动脚本：/usr/lib/systemd/system/mysqld.service 
+socket文件：/var/run/mysqld/mysqld.pid
+
+ 配置  my.cnf        vim /etc/my.cnf
+
+
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+server_id = 1
+expire_logs_days = 3
+ 
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+ 
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+启动mysql
+[root@localhost local]service mysqld restart
+登陆
+[root@localhost local]mysql -u root -p
+密码：
+
+[root@localhost local]grep "password" /var/log/mysqld.log
+会有一行  root@localhost:  fakjfkajfjajf
+登陆
+重置密码后才能进行别的操作
+alter user 'root'@'localhost' identified by 'Root!!2018';  
+刷新  flush privileges；
+
+把密码改简单的方法 http://blog.csdn.net/z13615480737/article/details/78907697
+降低密码复杂度：  set global validate_password_length=1;
+	            set global validate_password_policy=0;
+
+
+重新设置密码
+set password=password("root");  或  set password for root@localhost = password('123');  
+添加用户
+也可以 直接再添加新用户     
+    CREATE USER ‘root‘@‘%‘ IDENTIFIED BY ‘您的密码‘;
+
+grant all on *.* to 'root'@'%' identified by 'Root!!2018'  with grant option;
+
+   增加root用户指定可以任意IP登录，如果想限制只能让指定IP登录请把%替换成IP地址
+
+设置mysql开机自启动
+systemctl enable mysql
+去掉自启动    systemctl disabled mysql
+
+
+注意防火墙要放开3306端口
+

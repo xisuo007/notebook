@@ -1,0 +1,14 @@
+top 查看占用最高的  java   PID
+
+jps  -l     
+或 ps -ef | grep java | grep -v grep      可以找到哪个程序
+
+5488
+ps -mp 进程  -o THREAD,tid,time       -m是显示所有线程，-p pid进程使用cpu的时间  -o该参数后是用户自定义格式
+查看哪个线程占用较多cup
+
+6388
+转换tid为16进制           printf "%x\n" tid
+18f4
+
+jstack 进程id  | grep tid(16进制) -A60

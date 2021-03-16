@@ -1,0 +1,22 @@
+git init     把项目交给git管理
+git commit -am '提交的东西'     添加并提交
+git remote add origin 项目地址（ssh）       关联项目地址     初始化的时候要创建同名空项目
+git config --list    查看配置列表
+git push -u origin master      推送代码到主分支
+git pull     拉取代码到本地
+git reset -hard 版本号        回退代码到之前的版本
+git push -f origin master     不加-f无法推送，-f会覆盖掉前面版本的代码
+
+git checkout -b 新分支名字    创建并切换到新分支
+git checkout master           切换到master分支
+git checkout .                可以清除本目录下修改的内容
+
+git fetch      获取远程分支
+git branch     查看当前分支
+git branch -a  查看所有分支
+
+git merge 分支名  合并别的分支到当前分支
+
+alias    可以自定义短命令（进入.git/config   添加[alias] ac = !git add -A && git commit -m）
+
+git remote update origin --prune      刷新分支

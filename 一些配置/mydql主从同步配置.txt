@@ -1,0 +1,44 @@
+主机：192.168.1.100
+从机：192.168.1.101
+
+在主机（master）上的mysql创建用户
+mysql> create user repl identified by 'repl';
+这个用户主要是用来做数据同步的，给这个用户赋权，让他能够来拉取binlog从而达到同步目的
+mysql> grant replication slave on *.* to 'repl'@'%' identified by 'repl';
+
+退出mysql
+编辑   /etc/my.conf
+
+在[mysqld]下面添加
+log-bin=mysql-bin    //开启二进制文件
+server-id=201           //唯一标识id
+
+保存  重启mysql      
+[root@201 ~]# systemctl restart mysqld
+
+进入mysql  显示master状态
+mysql> show master status;
+会显示生成的二进制文件和起始位置posttion
+
+
+进入从机  编辑  /etc/my.conf
+[root@202 ~]# vim /etc/my.conf
+在[mysqld]后面添加
+server-id=202
+relay-log=slave-relay-bin      //配置中继日志，存储master同步过来的信息
+relay-log-index=slave-relay-bin.index
+read_only=1
+
+保存  重启mysql
+[root@202 ~]# systemctl restart mysqld
+
+进入mysql  设置同步master信息
+mysql> change master to master_host='192.168.4.201',master_port=3306,master_user='repl',master_password='repl',master_log_file='mysql-bin.000001',master_log_pos=154;
+				master的ip	master的端口	master上创建的用户名和密码                             master的二进制文件名        master的posttion位置
+启动服务
+mysql> start slave;
+显示slave 的状态
+mysql> show slave status\G;    // 格式化显示slave状态
+
+查看两个io线程是不是成功启动，如果状态都为yes说明同步成功，否则查看不成功原因
+

@@ -1,0 +1,164 @@
+
+第一步：下载mysql
+1[root@MiWiFi-R3-srv ~]# wget https://www.mysql.com/mysql/MySQL-5.7/mysql-5.7.17-linux-glibc2.5-x86_64.tar.gz
+ 若报-bash: wget: command not found，则表明没有安装wget，需要安装，安装命令如下：
+
+1yum -y install wget
+安装完成即可以使用。
+
+1:检查是否本地已经安装了mysql
+
+1rpm -qa | grep mysql
+2:卸载以前的mysql
+
+1rpm -e 已经存在的MySQL全名
+第二步：解压文件
+
+[root@MiWiFi-R3-srv ~]# tar -zxvf mysql-5.7.17-linux-glibc2.5-x86_64.tar.gz -C /usr/local/
+文件名修改为mysql：
+
+[root@MiWiFi-R3-srv local]# mv mysql-5.7.17-linux-glibc2.5-x86_64/ mysql
+第三步：配置启动文件
+然后去到mysql的support-files目录下,复制my.cnf到 /etc/my.cnf(mysqld启动时自动读取)
+
+[root@MiWiFi-R3-srv local]# cd mysql/support-files/
+[root@MiWiFi-R3-srv support-files]# cp my-default.cnf /etc/my.cnf
+cp: overwrite ‘/etc/my.cnf’? yes
+注意：如果你在安装时Linux虚拟机时同时安装了默认的mysql，此时操作以上步骤，终端将会提示你文件已存在是否覆盖，输入yes覆盖即可。
+
+2、配置数据库编码
+[root@MiWiFi-R3-srv support-files]# vim /etc/my.cnf
+添加以下内容:
+
+[mysql]
+default-character-set=utf8
+ 
+[mysqld]
+default-storage-engine=INNODB
+character_set_server=utf8
+3、复制mysql.server到/etc/init.d/目录下(目的想实现开机自动执行效果)
+[root@MiWiFi-R3-srv support-files]# cp mysql.server /etc/init.d/mysql
+4、修改/etc/init.d/mysql参数
+[root@MiWiFi-R3-srv support-files]# vim /etc/init.d/mysql
+修改以下内容:
+
+basedir=/usr/local/mysql
+datadir=/usr/local/mysql/data
+5、出于安全便利，创建一个操作数据库的专门用户
+建立一个mysql的组:
+
+[root@MiWiFi-R3-srv support-files]# groupadd mysql
+建立mysql用户，并且把用户放到mysql组:
+
+[root@MiWiFi-R3-srv support-files]# useradd -r -g mysql mysql
+给mysql用户设置一个密码:
+
+[root@MiWiFi-R3-srv support-files]# passwd mysql
+给目录/usr/local/mysql 更改拥有者:
+
+[root@MiWiFi-R3-srv support-files]# chown -R mysql:mysql /usr/local/mysql/
+第四步：初始化 mysql 的数据库
+
+[root@MiWiFi-R3-srv support-files]# cd /usr/local/mysql/bin/
+[root@MiWiFi-R3-srv bin]# ./mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+初始化后会生成一个临时密码 root@localhost:：*(最好先记录这个临时密码)
+
+2.给数据库加密
+[root@MiWiFi-R3-srv bin]# ./mysql_ssl_rsa_setup --datadir=/usr/local/mysql/data
+3.启动mysql
+[root@MiWiFi-R3-srv bin]#
+
+
+
+如果报错：
+      log-error set to '/var/log/mariadb/mariadb.log', however file don't exists. Create writable for user 'mysql'.
+解决：
+      mkdir /var/log/mariadb 
+      touch /var/log/mariadb/mariadb.log 
+      chown -R mysql:mysql /var/log/mariadb/
+
+4.检查mysql是否启动
+[root@MiWiFi-R3-srv bin]# ps -ef|grep mysql
+发现有进程便代表启动成功，退出mysql。
+
+mysql>exit
+第五步：进入客户端
+1.登录:
+[root@MiWiFi-R3-srv bin]# ./mysql -uroot -p
+Enter password:这里输入之前的临时密码
+2.修改密码
+mysql> set password=password('新密码');
+第六步：设置远程访问
+1:打开mysql的默认端口3306:
+[root@MiWiFi-R3-srv bin]# firewall-cmd --zone=public --add-port=3306/tcp --permanent
+提示FirewallD is not running，如下图所示。(ps:图片是在网上找的)
+（1）通过systemctl status firewalld查看firewalld状态，发现当前是dead状态，即防火墙未开启。
+（2）通过systemctl start firewalld开启防火墙，没有任何提示即开启成功。
+（3）再次通过systemctl status firewalld查看firewalld状态，显示running即已开启了。
+如果要关闭防火墙设置，可能通过systemctl stop firewalld这条指令来关闭该功能。
+打开3306端口正确为：
+
+[root@MiWiFi-R3-srv bin]# firewall-cmd --zone=public --add-port=3306/tcp --permanent
+success
+[root@MiWiFi-R3-srv bin]# firewall-cmd --reload
+success
+2:设置mysql的远程访问
+设置远程访问账号:grant all privileges on . to 远程访问用户名@’%’ identified by ‘用户密码’;
+
+mysql> grant all privileges on *.* to root@'%' identified by 'root';
+刷新:
+mysql> flush privileges;
+　
+第七步：设置开机自启动
+1、添加服务mysql
+[root@MiWiFi-R3-srv bin]# chkconfig --add mysql
+2、设置mysql服务为自启动
+[root@MiWiFi-R3-srv bin]# chkconfig mysql on
+第八步：配置环境变量
+[root@MiWiFi-R3-srv ~]# vim /etc/profile
+　最后一行添加:
+export PATH=$JAVA_HOME/bin:/usr/local/mysql/bin:$PATH
+　使修改生效:
+[root@MiWiFi-R3-srv ~]# source /etc/profile
+至此,mysql5.7的安装就完成了!!!
+
+
+
+
+
+
+
+
+
+
+1、安装mysql   wget  或者有.gz安装包拷贝到相关目录
+    wget https://www.mysql.com//Downloads/MySQL-5.7/mysql-5.7.20-linux-glibc2.12-x86_64.tar.gz 
+    tar zxvf mysql-5.7.20-linux-glibc2.12-x86_64.tar.gz #解压mysql文件
+　　cp mysql-5.7.20-linux-glibc2.12-x86_64 /usr/local/mysql -r #复mysql目录到系统的本地软件目录
+　　groupadd mysql #创建mysql组
+　　useradd mysql -g mysql #创建mysql用户并添加到mysql用户组
+　　pwd #当前目录 /usr/local/mysql
+　　chown -R mysql . #修改mysql所属用户
+　　chgrp -R mysql . #修改mysql所属组
+　　cd /usr/local/mysql/bin
+　　yum install libaio
+　　./mysqld --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data #data目录没有就创建(用mysql用户)，另外mysql_install_db这个命令已经废了换成了mysqld
+　　ln -s /usr/local/mysql/bin/mysql /usr/bin/mysql #创建mysql快捷方式
+　　service mysql start #启动mysql服务
+　　service mysql stop #停止mysql服务
+      service mysql status#查看mysql运行状态
+　　service mysql restart #重启mysql服务
+　　netstat -anp|grep mysqld #查看mysql服务
+ 
+2、接下来就是登陆了
+　　因为是首次登陆，这里笔者使用的方式是
+　　cat /root/.mysql_secret #这个是root首次登陆mysql的初始密码
+　　mysql -uroot -p密码
+　　SET PASSWORD FOR 'root'@'localhost' = PASSWORD('123456');   #修改数据密码　　
+ 
+3、设置远程客户端登陆
+　　mysql>GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.0.0' IDENTIFIED BY '123456' WITH GRANT OPTION;
+　　mysql>FLUSH PRIVILEGES;
+
+
+yum remove mysql-community-release-el7-5.noarch mysql-community-client-5.6.41-2.el7.x86_64 mysql-community-devel-5.6.41-2.el7.x86_64 mysql-community-libs-5.6.41-2.el7.x86_64 mysql-community-server-5.6.41-2.el7.x86_64 mysql-community-common-5.6.41-2.el7.x86_64

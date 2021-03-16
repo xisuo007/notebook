@@ -1,0 +1,30 @@
+启动/关闭
+
+cd usr/local/kafka
+./bin/kafka-server-stop.sh     停止
+./bin/kafka-server-start.sh -daemon /usr/local/kafka/config/server.properties    启动
+
+
+删除topic
+
+停止程序（生成/消费）
+
+cd kafka/config
+
+vim server.properties
+
+添加  auto.create.topics.enable = false  和   delete.topic.enable=true
+
+重启kafka和zk
+
+调用删除命令  
+./bin/kafka-topics --delete --zookeeper 192.168.1.235:端口 --topic pms.taskExecuteCacheObj (topic的name)
+
+查看topic：
+	./bin/kafka-topics.sh --zookeeper 192.168.1.235(zk的server):2181 --list
+
+查看分组名：
+	bin/kafka-consumer-groups.sh --bootstrap-server 192.168.1.232(kafka地址):9092 --list
+
+监听某个topic：
+	bin/kafka-console-consumer.sh --bootstrap-server 192.168.1.232:9092 --topic test(topic名称)

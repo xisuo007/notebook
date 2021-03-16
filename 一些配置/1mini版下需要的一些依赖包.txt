@@ -1,0 +1,7 @@
+迷你版需要yum安装一些需要的软件包
+
+    例如：bzip2（yum install bzip2 -y）  //解压用的
+               wget(yum install wget -y)    //网上下载东西要用到wget
+
+
+yum  -y  install  wget  gcc  gcc-c++  readline-devel  zlib-devel  make  systemtap  systemtap-sdt-devel perl  perl-devel  python  python-devel  tcl  tcl-devel  perl-ExtUtils-Embed  sgml-common  docbook  stylesheets  openjade  sgml-tools  xsltproc  libxslt  libxslt-devel  libxml2  libxml2-devel  zlib  zlib-devel  openssl  openssl-devel  pam  pam-devel  libreadline6-dev  bison  flex net-tools
